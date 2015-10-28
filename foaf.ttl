@@ -3,9 +3,9 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
 <https://www.linkedin.com/pub/juan-martin-buireo/90/805/40b> a foaf:Person ;
-	foaf:name "Juan Martí­n Buireo" ;
+	foaf:name "Juan Marti­n Buireo" ;
 	foaf:title "Sr" ;
-	foaf:givenname "Juan Martí­n" ;
+	foaf:givenname "Juan Marti­n" ;
 	foaf:family_name "Buireo" ;
 	foaf:nick "bahui80" ;
 	foaf:mbox <mailto:bahui80@gmail.com> ;
