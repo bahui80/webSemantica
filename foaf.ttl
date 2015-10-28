@@ -1,0 +1,29 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<https://www.linkedin.com/pub/juan-martin-buireo/90/805/40b> a foaf:Person ;
+	foaf:name "Juan Martí­n Buireo" ;
+	foaf:title "Sr" ;
+	foaf:givenname "Juan Martí­n" ;
+	foaf:family_name "Buireo" ;
+	foaf:nick "bahui80" ;
+	foaf:mbox <mailto:bahui80@gmail.com> ;
+	foaf:homepage <https://www.facebook.com/juan.buireo> ;
+	foaf:depiction <https://www.facebook.com/photo.php?> ;
+	foaf:phone <tel:+5491169536001> ;
+	foaf:workplaceHomepage <http://www.intersoft.com.ar/web/index.jsp?w=w> ;
+	foaf:schoolHomepage <http://www.cmb.org.ar/> ;
+	foaf:birthday "06-08" ;
+	foaf:age "25" ;
+	foaf:knows _:pablo .
+
+_:pablo a foaf:Person ;
+	foaf:name "Pablo Pauli" ;
+	foaf:mbox <mailto:pabloagustinpauli@gmail.com> .
+
+<https://www.linkedin.com/pub/juan-martin-buireo/90/805/40b> foaf:knows _:teresa .
+
+_:teresa a foaf:Person ;
+	foaf:name "Teresa Fontanella De Santis" ;
+	foaf:mbox <mailto:tfontanella011@gmail.com> .
