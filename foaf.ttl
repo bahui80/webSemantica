@@ -16,13 +16,18 @@
 	foaf:schoolHomepage <http://www.cmb.org.ar/> ;
 	foaf:birthday "06-08" ;
 	foaf:age "25" ;
-	foaf:knows _:pablo .
+	foaf:gender "Male" ;
+	foaf:knows _:pablo ,
+			   _:teresa .
+
+<https://www.linkedin.com/pub/juan-martin-buireo/90/805/40b> 
+	foaf:interest <http://musicbrainz.org/artist/163218c2-9e0f-4d2d-aecb-ebbdef6aab70> ,
+				  <http://musicbrainz.org/artist/170d6637-36e0-49dd-a225-c4fd5b77a285> .
+
 
 _:pablo a foaf:Person ;
 	foaf:name "Pablo Pauli" ;
 	foaf:mbox <mailto:pabloagustinpauli@gmail.com> .
-
-<https://www.linkedin.com/pub/juan-martin-buireo/90/805/40b> foaf:knows _:teresa .
 
 _:teresa a foaf:Person ;
 	foaf:name "Teresa Fontanella De Santis" ;
