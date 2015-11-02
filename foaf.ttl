@@ -27,8 +27,10 @@
 
 _:pablo a foaf:Person ;
 	foaf:name "Pablo Pauli" ;
-	foaf:mbox <mailto:pabloagustinpauli@gmail.com> .
+	foaf:mbox <mailto:pabloagustinpauli@gmail.com> ;
+	rdfs:seeAlso <http://pablopauli.github.io/foaf/> .
 
 _:teresa a foaf:Person ;
 	foaf:name "Teresa Fontanella De Santis" ;
-	foaf:mbox <mailto:tfontanella011@gmail.com> .
+	foaf:mbox <mailto:tfontanella011@gmail.com> ;
+	rdfs:seeAlso <http://terefds.github.io/foaf_turtle.ttl> .
