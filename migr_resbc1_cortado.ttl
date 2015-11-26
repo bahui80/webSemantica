@@ -1,0 +1,802 @@
+@prefix sdmx-measure:  <http://purl.org/linked-data/sdmx/2009/measure#> .
+@prefix concept:  <http://eurostat.linked-statistics.org/concept#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix dic:     <http://eurostat.linked-statistics.org/dic/> .
+@prefix data:    <http://eurostat.linked-statistics.org/data/> .
+@prefix sdmx-concept:  <http://purl.org/linked-data/sdmx/2009/concept#> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix property:  <http://eurostat.linked-statistics.org/property#> .
+@prefix dss:     <http://eurostat.linked-statistics.org/dss#> .
+@prefix qb:      <http://purl.org/linked-data/cube#> .
+@prefix qb4o:      <http://purl.org/qb4olap/cubes#> .
+@prefix sdmx-code:  <http://purl.org/linked-data/sdmx/2009/code#> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix title:   <http://eurostat.linked-statistics.org/title#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sdmx:    <http://purl.org/linked-data/sdmx#> .
+@prefix dsd:     <http://eurostat.linked-statistics.org/dsd/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix sdmx-dimension:  <http://purl.org/linked-data/sdmx/2009/dimension#> .
+@prefix cc:      <http://creativecommons.org/ns#> .
+@prefix desDim: <http://www.fing.edu.uy/inco/cubes/dims/migr_asyapp/destination#> .
+@prefix geoDim: <http://www.geoExample.com/inco/cubes/geo#> .
+@prefix decisionDim: <http://www.decisionExample.com/inco/cubes/decision#> .
+@prefix unitDim: <http://www.unitExample.com/inco/cubes/unit#> .
+
+###################################################################################################################################################################################
+############################################################################# Schema definition ###################################################################################
+###################################################################################################################################################################################
+dsd:migr_resbc1qb4o
+      rdf:type qb:DataStructureDefinition;
+      qb:component [qb4o:level property:citizen; qb4o:cardinality qb4o:ManyToOne];
+      qb:component [qb:attribute property:obs_status];
+      qb:component [qb4o:level dcterms:date; qb4o:cardinality qb4o:ManyToOne];
+      qb:component [qb4o:level sdmx-dimension:freq; qb4o:cardinality qb4o:ManyToOne];
+      qb:component [qb4o:level property:geo; qb4o:cardinality qb4o:ManyToOne];
+      qb:component [qb4o:level property:unit; qb4o:cardinality qb4o:ManyToOne];
+      qb:component [qb4o:level sdmx-measure:obsValue; qb4o:aggregateFunction qb4o:sum];
+      qb:component [qb4o:level property:isco08; qb4o:cardinality qb4o:ManyToOne];
+      qb:component [qb4o:level property:decision; qb4o:cardinality qb4o:ManyToOne];
+      skos:notation "migr_resbc1_DSD" .
+
+###################################################################################################################################################################################
+############################################################################# Citizen dimension ###################################################################################
+###################################################################################################################################################################################
+dsd:citizenDim 
+      rdf:type qb:DimensionProperty ;
+      rdfs:label "Citizen dimension"@en ;
+      qb4o:hasHierarchy dsd:citizenGovHier, dsd:citizenGeoHier .
+
+dsd:citizenGeoHier
+      rdf:type qb4o:Hierarchy ;
+      rdfs:label "Citizen geographical hierarchy"@en ;
+      qb4o:inDimension dsd:citizenDim ;
+      qb4o:hasLevel property:citizen, dsd:continent, dsd:citizenAll .
+
+dsd:citizenGovHier 
+      rdf:type qb4o:Hierarchy ;
+      rdfs:label "Citizen government hierarchy"@en ;
+      qb4o:inDimension dsd:citizenDim;
+      qb4o:hasLevel property:citizen, dsd:governmentType, dsd:citizenAll .
+
+property:citizen
+      rdf:type qb4o:LevelProperty, qb:CodedProperty ;
+      rdfs:domain qb:Observation ;
+      rdfs:range skos:Concept ;
+      qb:codeList dic:citizen ;
+      qb:concept concept:citizen .
+
+dsd:continent
+      rdf:type qb4o:LevelProperty ;
+      rdfs:label "Continent"@en .
+
+dsd:citizenAll
+      rdf:type qb4o:LevelProperty ;
+      rdfs:label "All citizens"@en .
+
+_:ih41 
+      rdf:type qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:citizenGeoHier ;
+      qb4o:childLevel property:citizen ; 
+      qb4o:parentLevel dsd:continent ; 
+      qb4o:pcCardinality qb4o:ManyToOne .
+
+_:ih42 
+      rdf:type qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:citizenGeoHier ;
+      qb4o:childLevel dsd:continent ;
+      qb4o:parentLevel dsd:citizenAll ; 
+      qb4o:pcCardinality qb4o:ManyToOne .
+
+_:ih43 
+      rdf:type qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:citizenGovHier ;
+      qb4o:childLevel property:citizen ; 
+      qb4o:parentLevel dsd:governmentType ; 
+      qb4o:pcCardinality qb4o:ManyToOne .
+
+_:ih44 
+      rdf:type qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:citizenGovHier ;
+      qb4o:childLevel dsd:governmentType ; 
+      qb4o:parentLevel dsd:citizenAll ; 
+      qb4o:pcCardinality qb4o:ManyToOne .
+
+<http://eurostat.linked-statistics.org/dic/citizen#AD>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:citizen ;
+      skos:broader desDim:EU ;
+      skos:broader ddbpedia:Unitary_state ;
+      skos:inScheme dic:citizen ;
+      skos:notation "AD" ;
+      skos:prefLabel "Andorra"@de , "Andorra"@en , "Andorre"@fr .
+
+<http://eurostat.linked-statistics.org/dic/citizen#AE>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:citizen ;
+      skos:broader desDim:AS ;
+      skos:broader dbpedia:Republic ;
+      skos:inScheme dic:citizen ;
+      skos:notation "AE" ;
+      skos:prefLabel "Émirats arabes unis"@fr , "Vereinigte Arabische Emirate"@de , "United Arab Emirates"@en .
+
+<http://eurostat.linked-statistics.org/dic/citizen#AF>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:citizen ;
+      skos:broader desDim:AS ;
+      skos:broader dbpedia:Republic ;
+      skos:inScheme dic:citizen ;
+      skos:notation "AF" ;
+      skos:prefLabel "Afghanistan"@de , "Afghanistan"@fr , "Afghanistan"@en .
+
+<http://eurostat.linked-statistics.org/dic/citizen#NZ>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:citizen ;
+      skos:broader desDim:OC ;
+      skos:broader dbpedia:Parliamentary_republic ;
+      skos:inScheme dic:citizen ;
+      skos:notation "NZ" ;
+      skos:prefLabel "New Zealand"@en , "Nouvelle-Zélande"@fr , "Neuseeland"@de .
+
+<http://eurostat.linked-statistics.org/dic/citizen#AR>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:citizen ;
+      skos:broader desDim:AM ;
+      skos:broader dbpedia:Federal_republic ;
+      skos:inScheme dic:citizen ;
+      skos:notation "AR" ;
+      skos:prefLabel "Argentine"@fr , "Argentina"@en , "Argentinien"@de .
+
+desDim:AF
+      qb4o:memberOf dsd:continent ;
+      skos:broader desDim:ALL; 
+      skos:prefLabel "Africa"@en .
+
+desDim:AS
+      qb4o:memberOf dsd:continent ;
+      skos:broader desDim:ALL; 
+      skos:prefLabel "Asia"@en .
+
+desDim:OC
+      qb4o:memberOf dsd:continent ;
+      skos:broader desDim:ALL; 
+      skos:prefLabel "Oceania"@en .
+
+desDim:AM
+      qb4o:memberOf dsd:continent ;
+      skos:broader desDim:ALL; 
+      skos:prefLabel "America"@en .
+
+desDim:EU
+      qb4o:memberOf dsd:continent ;
+      skos:broader desDim:ALL; 
+      skos:prefLabel "Europe"@en .
+
+dbpedia:Parliamentary_republic qb4o:memberOf dsd:governmentType ;
+      skos:broader desDim:ALL ;
+      skos:prefLabel "Parliamentary republic"@en ;
+      skos:notation "Parliamentary republic"@en .
+
+dbpedia:Unitary_state qb4o:memberOf dsd:governmentType ;
+      skos:broader desDim:ALL ;
+      skos:prefLabel "Unitary state"@en ;
+      skos:notation "Unitary state"@en .
+
+dbpedia:Federalism qb4o:memberOf dsd:governmentType ;
+      skos:broader desDim:ALL ;
+      skos:prefLabel "Federalism"@en ;
+      skos:notation "Federalism"@en .
+
+dbpedia:Federal_Government_of_Somalia qb4o:memberOf dsd:governmentType ;
+      skos:broader
+      desDim:ALL ;
+      skos:prefLabel "Federal Government of Somalia"@en ;
+      skos:notation "Federal Government of Somalia"@en .
+
+dbpedia:Republic qb4o:memberOf dsd:governmentType ;
+      skos:broader desDim:ALL ;
+      skos:prefLabel "Republic"@en ;
+      skos:notation "Republic"@en ; .
+
+desDim:ALL
+      qb4o:memberOf dsd:citizenAll; skos:prefLabel "All citizens"@en .
+
+concept:citizen
+      rdf:type sdmx:Concept ;
+      skos:inScheme concept: ;
+      skos:notation "citizen" ;
+      skos:prefLabel "Staatsangehörigkeit"@de , "Country of citizenship"@en , "Pays de citoyenneté"@fr .
+
+dic:citizen
+      rdf:type skos:ConceptScheme ;
+      rdfs:label "Staatsangehörigkeit"@de , "Country of citizenship"@en , "Pays de citoyenneté"@fr ;
+      skos:hasTopConcept <http://eurostat.linked-statistics.org/dic/citizen#AD>, <http://eurostat.linked-statistics.org/dic/citizen#AE>, <http://eurostat.linked-statistics.org/dic/citizen#AF>, <http://eurostat.linked-statistics.org/dic/citizen#NZ>, <http://eurostat.linked-statistics.org/dic/citizen#AR> ;
+      skos:notation "cl_citizen" .
+
+###################################################################################################################################################################################
+######################################################################## Geographical dimension ###################################################################################
+###################################################################################################################################################################################
+dsd:geoDim 
+      rdf:type qb:DimensionProperty ;
+      rdfs:label "Geographical dimension"@en ;
+      qb4o:hasHierarchy dsd:geoHier .
+
+dsd:geoHier 
+      rdf:type qb4o:Hierarchy ;
+      rdfs:label "Geographical hierarchy"@en ;
+      qb4o:inDimension dsd:geoDim ;
+      qb4o:hasLevel property:geo, dsd:geoAll .
+
+_:ih31 a qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:geoHier ;
+      qb4o:childLevel property:geo ;
+      qb4o:parentLevel dsd:geoAll ;
+      qb4o:cardinality qb4o:ManyToOne .
+
+property:geo
+      rdf:type qb4o:LevelProperty, qb:CodedProperty ;
+      rdfs:domain qb:Observation ;
+      rdfs:range skos:Concept ;
+      qb:codeList dic:geo ;
+      qb:concept concept:geo .
+
+dsd:geoAll
+      rdf:type qb4o:LevelProperty ;
+      rdfs:label "All european countries"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#BE>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "BE" ;
+      skos:prefLabel "Belgique"@fr , "Belgien"@de , "Belgium"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#BG>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "BG" ;
+      skos:prefLabel "Bulgarien"@de , "Bulgaria"@en , "Bulgarie"@fr .
+
+<http://eurostat.linked-statistics.org/dic/geo#FI>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "FI" ;
+      skos:prefLabel "Finlande"@fr , "Finnland"@de , "Finland"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#FR>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "FR" ;
+      skos:prefLabel "Frankreich"@de , "France"@fr , "France"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#HR>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "HR" ;
+      skos:prefLabel "Kroatien"@de , "Croatie"@fr , "Croatia"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#HU>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "HU" ;
+      skos:prefLabel "Ungarn"@de , "Hongrie"@fr , "Hungary"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#IT>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "IT" ;
+      skos:prefLabel "Italie"@fr , "Italien"@de , "Italy"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#LU>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "LU" ;
+      skos:prefLabel "Luxemburg"@de , "Luxembourg"@fr , "Luxembourg"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#LV>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "LV" ;
+      skos:prefLabel "Latvia"@en , "Lettland"@de , "Lettonie"@fr .
+
+<http://eurostat.linked-statistics.org/dic/geo#MT>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "MT" ;
+      skos:prefLabel "Malta"@de , "Malta"@en , "Malte"@fr .
+
+<http://eurostat.linked-statistics.org/dic/geo#NL>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "NL" ;
+      skos:prefLabel "Netherlands"@en , "Niederlande"@de , "Pays-Bas"@fr .
+
+<http://eurostat.linked-statistics.org/dic/geo#PL>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "PL" ;
+      skos:prefLabel "Poland"@en , "Polen"@de , "Pologne"@fr .
+
+<http://eurostat.linked-statistics.org/dic/geo#PT>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "PT" ;
+      skos:prefLabel "Portugal"@de , "Portugal"@fr , "Portugal"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#RO>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "RO" ;
+      skos:prefLabel "Romania"@en , "Rumänien"@de , "Roumanie"@fr .
+
+<http://eurostat.linked-statistics.org/dic/geo#EE>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "EE" ;
+      skos:prefLabel "Estonie"@fr , "Estonia"@en , "Estland"@de .
+
+<http://eurostat.linked-statistics.org/dic/geo#ES>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "ES" ;
+      skos:prefLabel "Espagne"@fr , "Spanien"@de , "Spain"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#SK>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "SK" ;
+      skos:prefLabel "Slovaquie"@fr , "Slowakei"@de , "Slovakia"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#CY>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "CY" ;
+      skos:prefLabel "Zypern"@de , "Cyprus"@en , "Chypre"@fr .
+
+<http://eurostat.linked-statistics.org/dic/geo#CZ>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "CZ" ;
+      skos:prefLabel "Tschechische Republik"@de , "République tchèque"@fr , "Czech Republic"@en .
+
+<http://eurostat.linked-statistics.org/dic/geo#SI>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:geo ;
+      skos:broader geoDim:ALL ;
+      skos:inScheme dic:geo ;
+      skos:notation "SI" ;
+      skos:prefLabel "Slowenien"@de , "Slovénie"@fr , "Slovenia"@en .
+
+geoDim:ALL
+      qb4o:memberOf dsd:geoAll; skos:prefLabel "All european countries"@en .
+
+concept:geo
+      rdf:type sdmx:Concept ;
+      skos:inScheme concept: ;
+      skos:notation "geo" ;
+      skos:prefLabel "Geopolitische Meldeeinheit"@de , "Entité géopolitique (déclarante)"@fr , "Geopolitical entity (reporting)"@en .
+
+dic:geo
+      rdf:type skos:ConceptScheme ;
+      rdfs:label "Entité géopolitique (déclarante)"@fr , "Geopolitische Meldeeinheit"@de , "Geopolitical entity (reporting)"@en ;
+      skos:hasTopConcept <http://eurostat.linked-statistics.org/dic/geo#RO> , <http://eurostat.linked-statistics.org/dic/geo#CZ> , <http://eurostat.linked-statistics.org/dic/geo#HR> , <http://eurostat.linked-statistics.org/dic/geo#EE> , <http://eurostat.linked-statistics.org/dic/geo#MT> , <http://eurostat.linked-statistics.org/dic/geo#LV> , <http://eurostat.linked-statistics.org/dic/geo#ES> , <http://eurostat.linked-statistics.org/dic/geo#LU> , <http://eurostat.linked-statistics.org/dic/geo#FR> , <http://eurostat.linked-statistics.org/dic/geo#NL> , <http://eurostat.linked-statistics.org/dic/geo#CY> , <http://eurostat.linked-statistics.org/dic/geo#PL> , <http://eurostat.linked-statistics.org/dic/geo#SI> , <http://eurostat.linked-statistics.org/dic/geo#FI> , <http://eurostat.linked-statistics.org/dic/geo#SK> , <http://eurostat.linked-statistics.org/dic/geo#PT> , <http://eurostat.linked-statistics.org/dic/geo#IT> , <http://eurostat.linked-statistics.org/dic/geo#HU> , <http://eurostat.linked-statistics.org/dic/geo#BE> , <http://eurostat.linked-statistics.org/dic/geo#BG> ;
+      skos:notation "cl_geo" .
+
+
+###################################################################################################################################################################################
+############################################################################ Decision dimension ###################################################################################
+###################################################################################################################################################################################
+dsd:decisionDim a qb:DimensionProperty ;
+      rdfs:label "Decision dimension"@en ;
+      qb4o:hasHierarchy dsd:decisionHier .
+
+dsd:decisionHier a qb4o:Hierarchy ;
+      rdfs:label "Decision hierarchy"@en ;
+      qb4o:inDimension dsd:decisionDim ;
+      qb4o:hasLevel property:decision, dsd:decisionAll .
+
+_:ih21 a qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:decisionHier ;
+      qb4o:childLevel property:decision ;
+      qb4o:parentLevel dsd:decisionAll ;
+      qb4o:cardinality qb4o:ManyToOne .
+
+property:decision
+      rdf:type qb:LevelProperty , qb:CodedProperty ;
+      rdfs:domain qb:Observation ;
+      rdfs:range skos:Concept ;
+      qb:codeList dic:decision ;
+      qb:concept concept:decision .
+
+dsd:decisionAll 
+      rdf:type qb4o:LevelProperty ;
+      rdfs:label "All decisions"@en .
+
+<http://eurostat.linked-statistics.org/dic/decision#GRANTED>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:decision ;
+      skos:broader decisionDim:ALL ;
+      skos:inScheme dic:decision ;
+      skos:notation "GRANTED" ;
+      skos:prefLabel "Accordé"@fr , "Bewilligt"@de , "Granted"@en .
+
+<http://eurostat.linked-statistics.org/dic/decision#WITHDRAWN>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:decision ;
+      skos:broader decisionDim:ALL ;
+      skos:inScheme dic:decision ;
+      skos:notation "WITHDRAWN" ;
+      skos:prefLabel "Zurückgezoger"@de , "Retraits"@fr , "Withdrawn"@en .
+
+<http://eurostat.linked-statistics.org/dic/decision#RENEWED>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:decision ;
+      skos:broader decisionDim:ALL ;
+      skos:inScheme dic:decision ;
+      skos:notation "RENEWED" ;
+      skos:prefLabel "Renouvelé "@fr , "Verlängert"@de , "Renewed"@en .
+
+decisionDim:ALL
+      qb4o:memberOf dsd:decisionAll; skos:prefLabel "All decisions"@en .
+
+concept:decision
+      rdf:type sdmx:Concept ;
+      skos:inScheme concept: ;
+      skos:notation "decision" ;
+      skos:prefLabel "Entscheidung"@de , "Décision"@fr , "Decision"@en .
+
+dic:decision
+      rdf:type skos:ConceptScheme ;
+      rdfs:label "Entscheidung"@de , "Décision"@fr , "Decision"@en ;
+      skos:hasTopConcept <http://eurostat.linked-statistics.org/dic/decision#RENEWED> , <http://eurostat.linked-statistics.org/dic/decision#GRANTED> , <http://eurostat.linked-statistics.org/dic/decision#WITHDRAWN> ;
+      skos:notation "cl_decision" .
+
+###################################################################################################################################################################################
+################################################################################ Isco dimension ###################################################################################
+###################################################################################################################################################################################
+dsd:isco08Dim a qb:DimensionProperty ;
+      rdfs:label "Occupation dimension"@en ;
+      qb4o:hasHierarchy dsd:isco08Hier .
+
+dsd:isco08Hier a qb4o:Hierarchy ;
+      rdfs:label "Occupation hierarchy"@en ;
+      qb4o:inDimension dsd:isco08Dim ;
+      qb4o:hasLevel property:isco08, dsd:isco08All .
+
+_:ih11 a qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:isco08Hier ;
+      qb4o:childLevel property:isco08 ;
+      qb4o:parentLevel dsd:isco08All ;
+      qb4o:cardinality qb4o:ManyToOne .
+
+property:isco08
+      rdf:type qb:LevelProperty , qb:CodedProperty ;
+      rdfs:domain qb:Observation ;
+      rdfs:range skos:Concept ;
+      qb:codeList dic:isco08 ;
+      qb:concept concept:isco08 .
+
+dsd:isco08All 
+      rdf:type qb4o:LevelProperty ;
+      rdfs:label "All occupations"@en .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC24>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC24" ;
+      skos:prefLabel "Betriebswirte und vergleichbare akademische Berufe"@de , "Business and administration professionals"@en , "Spécialistes en administration d'entreprises"@fr .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC23>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC23" ;
+      skos:prefLabel "Teaching professionals"@en , "Lehrkräfte"@de , "Spécialistes de l'enseignement"@fr .
+
+<http://eurostat.linked-statistics.org/dic/isco08#TOTAL>
+      rdf:type skos:Concept ;
+      qb4o:memberOf dsd:isco08All ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "TOTAL" ;
+      skos:prefLabel "Insgesamt"@de , "Total"@fr , "Total"@en .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC12>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC12" ;
+      skos:prefLabel "Führungskräfte im kaufmännischen Bereich"@de , "Directeurs de services administratifs et commerciaux "@fr , "Administrative and commercial managers"@en .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC13>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC13" ;
+      skos:prefLabel "Führungskräfte in der Produktion und bei speziellen Dienstleistungen"@de , "Production and specialised services managers"@en , "Directeurs et cadres de direction, production et services spécialisés"@fr .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC1>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC1" ;
+      skos:prefLabel "Managers"@en , "Directeurs, cadres de direction et gérants"@fr , "Führungskräfte"@de .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC21>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC21" ;
+      skos:prefLabel "Naturwissenschaftler, Mathematiker und Ingenieure"@de , "Spécialistes des sciences techniques"@fr , "Science and engineering professionals"@en .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC22>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC22" ;
+      skos:prefLabel "Akademische und verwandte Gesundheitsberufe"@de , "Spécialistes de la santé"@fr , "Health professionals"@en .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC11>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC11" ;
+      skos:prefLabel "Chief executives, senior officials and legislators"@en , "Directeurs généraux, cadres supérieurs et membres de l'Exécutif et des corps législatifs"@fr , "Geschäftsführer, Vorstände, leitende Verwaltungsbedienstete und Angehörige gesetzgebender Körperschaften"@de .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC2>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC2" ;
+      skos:prefLabel "Akademische Berufe"@de , "Professions intellectuelles et scientifiques"@fr , "Professionals"@en .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC25>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC25" ;
+      skos:prefLabel "Akademische und vergleichbare Fachkräfte in der Informations- und Kommunikationstechnologie"@de , "Spécialistes des technologies de l'information et des communications"@fr , "Information and communications technology professionals"@en .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC14>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC14" ;
+      skos:prefLabel "Führungskräfte in Hotels und Restaurants, im Handel und in der Erbringung sonstiger Dienstleistungen"@de , "Hospitality, retail and other services managers"@en , "Directeurs et gérants de l'hôtellerie, la restauration, le commerce et autres services"@fr .
+
+<http://eurostat.linked-statistics.org/dic/isco08#OC26>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "OC26" ;
+      skos:prefLabel "Legal, social and cultural professionals"@en , "Spécialistes de la justice, des sciences sociales et de la culture"@fr , "Juristen, Sozialwissenschaftler und Kulturberufe"@de .
+
+<http://eurostat.linked-statistics.org/dic/isco08#UNK>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:isco08 ;
+      skos:broader <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> ;
+      skos:inScheme dic:isco08 ;
+      skos:notation "UNK" ;
+      skos:prefLabel "Unbekannt"@de , "Inconnu"@fr , "Unknown"@en .
+
+concept:isco08
+      rdf:type sdmx:Concept ;
+      skos:inScheme concept: ;
+      skos:notation "isco08" ;
+      skos:prefLabel "Classification internationale type des professions 2008 (CITP-08)"@fr , "Internationale Standardklassifikation der Berufe 2008 (ISCO-08)"@de , "International Standard Classification of Occupations 2008 (ISCO-08)"@en .
+
+dic:isco08
+      rdf:type skos:ConceptScheme ;
+      rdfs:label "Classification internationale type des professions 2008 (CITP-08)"@fr , "Internationale Standardklassifikation der Berufe 2008 (ISCO-08)"@de , "International Standard Classification of Occupations 2008 (ISCO-08)"@en ;
+      skos:hasTopConcept <http://eurostat.linked-statistics.org/dic/isco08#OC23> , <http://eurostat.linked-statistics.org/dic/isco08#TOTAL> , <http://eurostat.linked-statistics.org/dic/isco08#OC26> , <http://eurostat.linked-statistics.org/dic/isco08#OC24> , <http://eurostat.linked-statistics.org/dic/isco08#OC25> , <http://eurostat.linked-statistics.org/dic/isco08#OC21> , <http://eurostat.linked-statistics.org/dic/isco08#OC22> , <http://eurostat.linked-statistics.org/dic/isco08#OC11> , <http://eurostat.linked-statistics.org/dic/isco08#OC12> , <http://eurostat.linked-statistics.org/dic/isco08#OC13> , <http://eurostat.linked-statistics.org/dic/isco08#OC2> , <http://eurostat.linked-statistics.org/dic/isco08#UNK> , <http://eurostat.linked-statistics.org/dic/isco08#OC14> , <http://eurostat.linked-statistics.org/dic/isco08#OC1> ;
+      skos:notation "cl_isco08" .
+
+
+###################################################################################################################################################################################
+################################################################################ Unit dimension ###################################################################################
+###################################################################################################################################################################################
+dsd:unitDim a qb:DimensionProperty ;
+      rdfs:label "Unit dimension"@en ;
+      qb4o:hasHierarchy dsd:unitHier .
+
+dsd:unitHier a qb4o:Hierarchy ;
+      rdfs:label "Unit hierarchy"@en ;
+      qb4o:inDimension dsd:unitDim ;
+      qb4o:hasLevel property:unit, dsd:unitAll .
+
+_:h51 a qb4o:HierarchyStep ;
+      qb4o:inHierarchy dsd:unitHier ;
+      qb4o:childLevel property:unit ;
+      qb4o:parentLevel dsd:unitAll ;
+      qb4o:cardinality qb4o:ManyToOne .
+
+property:unit
+      rdf:type qb:LevelProperty , qb:CodedProperty ;
+      rdfs:domain qb:Observation ;
+      rdfs:range skos:Concept ;
+      qb:codeList dic:unit ;
+      qb:concept concept:unit .
+
+dsd:unitAll 
+      rdf:type qb4o:LevelProperty ;
+      rdfs:label "All units"@en .
+
+<http://eurostat.linked-statistics.org/dic/unit#PER>
+      rdf:type skos:Concept ;
+      qb4o:memberOf property:unit ;
+      skos:broader unitDim:ALL ;
+      skos:inScheme dic:unit ;
+      skos:notation "PER" ;
+      skos:prefLabel "Person"@de , "Person"@en , "Personne"@fr .
+
+unitDim:ALL
+      qb4o:memberOf dsd:unitAll; skos:prefLabel "All units"@en .
+
+concept:unit
+      rdf:type sdmx:Concept ;
+      skos:inScheme concept: ;
+      skos:notation "unit" ;
+      skos:prefLabel "Unité de mesure"@fr , "Maßeinheit"@de , "Unit of measure"@en .
+
+dic:unit
+      rdf:type skos:ConceptScheme ;
+      rdfs:label "Unité de mesure"@fr , "Maßeinheit"@de , "Unit of measure"@en ;
+      skos:hasTopConcept <http://eurostat.linked-statistics.org/dic/unit#PER> ;
+      skos:notation "cl_unit" .
+
+###################################################################################################################################################################################
+#################################################################################### Obs_status ###################################################################################
+###################################################################################################################################################################################
+property:obs_status
+      rdf:type qb:AttributeProperty , qb:CodedProperty ;
+      rdfs:domain qb:Observation ;
+      rdfs:range skos:Concept ;
+      qb:codeList dic:obs_status ;
+      qb:concept concept:obs_status .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#u>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "u" ;
+      skos:prefLabel "geringe Zuverlässigkeit"@de , "peu fiable"@fr , "low reliability"@en .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#f>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "f" ;
+      skos:prefLabel "forecast"@en , "Prognose"@de , "prévision"@fr .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#z>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "z" ;
+      skos:prefLabel "nicht zutreffend"@de , "not applicable"@en , "non applicable"@fr .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#i>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "i" ;
+      skos:prefLabel "siehe Metadaten"@de , "see metadata"@en , "voir métadonnées"@fr .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#n>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "n" ;
+      skos:prefLabel "non significatif"@fr , "unbedeutend"@de , "not significant"@en .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#r>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "r" ;
+      skos:prefLabel "revidiert"@de , "révisé"@fr , "revised"@en .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#b>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "b" ;
+      skos:prefLabel "rupture de série"@fr , "Zeitreihenbruch"@de , "break in time series"@en .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#s>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "s" ;
+      skos:prefLabel "estimation Eurostat"@fr , "Eurostat Schätzung"@de , "Eurostat estimate"@en .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#p>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "p" ;
+      skos:prefLabel "vorläufig"@de , "provisional"@en , "provisoire"@fr .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#c>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "c" ;
+      skos:prefLabel "confidentiel"@fr , "confidential"@en , "vertraulich"@de .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#d>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "d" ;
+      skos:prefLabel "abweichende Definition, siehe Metadaten"@de , "definition differs, see metadata"@en , "définition différente, voir métadonnées"@fr .
+
+<http://eurostat.linked-statistics.org/dic/obs_status#e>
+      rdf:type skos:Concept ;
+      skos:inScheme dic:obs_status ;
+      skos:notation "e" ;
+      skos:prefLabel "estimated"@en , "geschätzt"@de , "estimé"@fr .
+
+concept:obs_status
+      rdf:type sdmx:Concept ;
+      skos:inScheme concept: ;
+      skos:notation "obs_status" ;
+      skos:prefLabel "Observation Status"@en .
+
+dic:obs_status
+      rdf:type skos:ConceptScheme ;
+      rdfs:label "Observation status code list"@en ;
+      skos:hasTopConcept <http://eurostat.linked-statistics.org/dic/obs_status#f> , <http://eurostat.linked-statistics.org/dic/obs_status#z> , <http://eurostat.linked-statistics.org/dic/obs_status#b> , <http://eurostat.linked-statistics.org/dic/obs_status#p> , <http://eurostat.linked-statistics.org/dic/obs_status#e> , <http://eurostat.linked-statistics.org/dic/obs_status#r> , <http://eurostat.linked-statistics.org/dic/obs_status#s> , <http://eurostat.linked-statistics.org/dic/obs_status#d> , <http://eurostat.linked-statistics.org/dic/obs_status#i> , <http://eurostat.linked-statistics.org/dic/obs_status#c> , <http://eurostat.linked-statistics.org/dic/obs_status#u> , <http://eurostat.linked-statistics.org/dic/obs_status#n> ;
+      skos:notation "cl_obs_status" .
+
+
+
+
+###################################################################################################################################################################################
+######################################################################################## Others ###################################################################################
+###################################################################################################################################################################################
+concept:time_format
+      rdf:type sdmx:Concept ;
+      skos:inScheme concept: ;
+      skos:notation "time_format" ;
+      skos:prefLabel "Time Format"@en .
